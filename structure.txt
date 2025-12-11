@@ -1,0 +1,20 @@
+separate header files:
+
+AVR:
+    - spi   (spi-avr.h)     done
+
+    TO ADD:
+    - i2c   (i2c-avr.h)     done
+    - lcd   (lcd-avr.h)     done
+
+ARM:
+    - spi   (spi-arm.h) -> SPI2
+
+    TO ADD:
+    - i2c   (i2c-arm.h)
+    - lcd   (lcd-arm.h)
+
+for MFRC522: common MFRC522.h file (done)
+    (!) SPI transceiving functions must have the same names in AVR and ARM headers (spi_transmit, spi_receive, etc)
+
+init code in main (if (MCU_*) {...})
