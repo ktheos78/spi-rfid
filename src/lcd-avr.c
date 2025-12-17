@@ -1,4 +1,4 @@
-/* initialization/driver functions for LCD, using PCA9555 port expander */
+/* initialization/driver functions for LCD, using PORTD */
 #define F_CPU 16000000UL
 #include <avr/io.h>
 #include <util/delay.h>
@@ -12,46 +12,37 @@ void write_2_nibbles(uint8_t data)
     uint8_t temp;
 
     // send high nibble
-    temp = PCA9555_0_read(REG_OUTPUT_0);    // read previous value
-    temp = (temp & 0x0F) | (data & 0xF0);   // keep lower 4 bits of IO0, upper 4 bits of lcd_data
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    temp = (PIND & 0x0F) | (data & 0xF0);    // keep lower 4 bits of PIND, upper 4 bits of lcd_data
+    PORTD = temp;
 
     // enable pulse
-    temp |= (1 << IO0_3);
-    PCA9555_0_write(REG_OUTPUT_0, temp);
-    temp &= ~(1 << IO0_3);
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    PORTD |= (1 << PD3);
+    __asm volatile ("nop");
+    __asm volatile ("nop");
+    PORTD &= ~(1 << PD3);
 
     // send low nibble
     data <<= 4;
-    temp = PCA9555_0_read(REG_OUTPUT_0);
-    temp = (temp & 0x0F) | (data & 0xF0);   // keep lower 4 bits of IO0, lower 4 bits of lcd_data
+    temp = (PIND & 0x0F) | (data & 0xF0);    // keep lower 4 bits of PIND, lower 4 bits of lcd_data shifted to upper nibble
+    PORTD = temp;
 
     // enable pulse
-    temp |= (1 << IO0_3);
-    PCA9555_0_write(REG_OUTPUT_0, temp);
-    temp &= ~(1 << IO0_3);
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    PORTD |= (1 << PD3);
+    __asm volatile ("nop");
+    __asm volatile ("nop");
+    PORTD &= ~(1 << PD3);
 }
 
 void lcd_data(uint8_t data)
 {
-    uint8_t temp;
-    
-    temp = PCA9555_0_read(REG_OUTPUT_0);
-    temp |= (1 << IO0_2);                   // LCD_RS = 1 -> data
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    PORTD |= (1 << PD2);    // LCD_RS = 1 (PD2 = 1) -> data
     write_2_nibbles(data);
     _delay_ms(5);
 }
 
 void lcd_command(uint8_t cmd)
 {
-    uint8_t temp;
-
-    temp = PCA9555_0_read(REG_OUTPUT_0);
-    temp &= ~(1 << IO0_2);                  // LCD_RS = 0 -> instruction
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    PORTD &= ~(1 << PD2);   // LCD_RS = 0 (PD2 = 0) -> instruction
     write_2_nibbles(cmd);
     _delay_ms(5);
 }
@@ -64,32 +55,28 @@ void lcd_clear_display(void)
 
 void lcd_init(void)
 {
-    uint8_t temp;
-
     _delay_ms(200);
 
     // send cmd to switch to 8-bit mode 3 times
     for (uint8_t i = 0; i < 3; ++i)
     {
         // switch to 8-bit mode
-        temp = 0x30;
-        PCA9555_0_write(REG_OUTPUT_0, temp);
-
+        PORTD = 0x30;       
+        
         // enable pulse
-        temp |= (1 << IO0_3);
-        PCA9555_0_write(REG_OUTPUT_0, temp);
-        temp &= ~(1 << IO0_3);
-        PCA9555_0_write(REG_OUTPUT_0, temp);
+        PORTD |= (1 << PD3);
+        __asm volatile ("nop");
+        __asm volatile ("nop");
+        PORTD &= ~(1 << PD3);
         _delay_us(250);
     }
 
     // switch to 4-bit mode
-    temp = 0x20;
-    PCA9555_0_write(REG_OUTPUT_0, temp);
-    temp |= (1 << IO0_3);                   // enable pulse
-    PCA9555_0_write(REG_OUTPUT_0, temp);
-    temp &= ~(1 << IO0_3);
-    PCA9555_0_write(REG_OUTPUT_0, temp);
+    PORTD = 0x20;
+    PORTD |= (1 << PD3);    // enable pulse
+    __asm volatile ("nop");
+    __asm volatile ("nop");
+    PORTD &= ~(1 << PD3);
     _delay_us(250);
 
     // set 4-bit mode, 2 lines, 5x8 dots

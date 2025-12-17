@@ -11,11 +11,7 @@
 #define CS_LOW()    (PORTB &= ~(1 << CS))
 #define CS_HIGH()   (PORTB |= (1 << CS))
 
-#define RST_LOW()   (PORTB &= ~(1 << RST))
-#define RST_HIGH()  (PORTB |= (1 << RST))
-
 void spi_master_init(void);
-void spi_master_transmit(uint8_t);
-uint8_t spi_master_receive(void);
+static uint8_t spi_transceive(uint8_t);
 
 #endif /* _SPI_AVR_H */

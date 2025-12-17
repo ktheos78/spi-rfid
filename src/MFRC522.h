@@ -3,6 +3,30 @@
 
 #include <stdint.h>
 
+#if defined(__AVR__)
+
+    #include "spi-avr.h"
+
+    #define CS_LOW() PORTB &= ~(1 << CS)
+    #define CS_HIGH() PORTB |= (1 << CS)
+
+    #define MCU_ATMEL   1
+    #define MCU_STM32   0
+
+#elif defined(STM32G474xx)
+
+    #include "spi-arm.h"
+
+    #define CS_LOW() LL_GPIO_ResetOutputPin(SPI2_CS_GPIO_Port, SPI2_CS_Pin)
+    #define CS_HIGH() LL_GPIO_SetOutputPin(SPI2_CS_GPIO_Port, SPI2_CS_Pin)
+
+    #define MCU_ATMEL   0
+    #define MCU_STM32   1
+    
+#else
+    #error "Unknown MCU"
+#endif
+
 // commands
 #define PCD_IDLE        0x00
 #define PCD_TRANSCEIVE  0x0C
@@ -39,7 +63,16 @@
 // maximum array length
 #define MAX_LEN         16
 
+// core MFRC522 functions
+void MFRC522_init(void);
 void MFRC522_write_reg(uint8_t, uint8_t);
 uint8_t MFRC522_read_reg(uint8_t);
+uint8_t MFRC522_to_card(uint8_t, uint8_t *, uint8_t, uint8_t *, uint8_t *);
+uint8_t MFRC522_request(uint8_t *);
+uint8_t MFRC522_anticoll(uint8_t *);
+
+// helpers
+void set_bitmask(uint8_t, uint8_t);
+void clear_bitmask(uint8_t, uint8_t);
 
 #endif /* _MFRC522_H */

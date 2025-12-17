@@ -1,14 +1,6 @@
 #include <stdint.h>
 #include "MFRC522.h"
 
-#if defined(__AVR__)
-    #include "spi-avr.h"
-#elif defined(STM32G474xx)
-    #include "spi-arm.h"
-#else
-    #error "Unknown MCU"
-#endif
-
 void MFRC522_write_reg(uint8_t reg, uint8_t val)
 {
     // select MFRC522
@@ -16,10 +8,10 @@ void MFRC522_write_reg(uint8_t reg, uint8_t val)
 
     // transmit register address
     // leftshifted by 1, R/W bit (MSB) set to 0 for write
-    spi_master_transmit((reg << 1) & 0x7E);
+    (void)spi_transceive((reg << 1) & 0x7E);
 
     // transmit data
-    spi_master_transmit(val);
+    (void)spi_transceive(val);
 
     // deselect MFRC522
     CS_HIGH();
@@ -34,10 +26,10 @@ uint8_t MFRC522_read_reg(uint8_t reg)
 
     // transmit register address
     // leftshifted by 1, R/W bit (MSB) set to 1 for read
-    spi_master_transmit(((reg << 1) & 0x7E) | 0x80);
+    (void)spi_transceive(((reg << 1) & 0x7E) | 0x80);
 
     // get read
-    ret = spi_master_receive();
+    ret = spi_transceive(0xFF);
 
     // deselect MFRC522
     CS_HIGH();
@@ -61,7 +53,10 @@ void MFRC522_init(void)
 {
     // soft reset
     MFRC522_write_reg(CommandReg, PCD_RESETPHASE);
-    _delay_ms(50);
+    if (MCU_ATMEL)
+        _delay_ms(50);
+    else if (MCU_STM32)
+        LL_mDelay(50);
 
     // init timer
     MFRC522_write_reg(TModeReg, 0x80);

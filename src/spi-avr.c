@@ -14,24 +14,16 @@ void spi_master_init(void)
 
     // set mode 0 (CPH = CPL = 0)
     SPCR0 &= ~((1 << CPHA) | (1 << CPOL));
-}
+} 
 
-void spi_master_transmit(uint8_t data)
+static uint8_t spi_transceive(uint8_t data)
 {
     // start transmission
     SPDR0 = data;
 
     // wait for transmission complete
     while (!(SPSR0 & (1 << SPIF)));
-}
 
-uint8_t spi_master_receive(void)
-{
-    // dummy data
-    SPDR0 = 0xFF;
-
-    // wait for reception complete
-    while (!(SPSR0 & (1 << SPIF)));
-
+    // return cached data
     return SPDR0;
 }
