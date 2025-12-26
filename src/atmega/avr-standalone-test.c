@@ -1,6 +1,5 @@
 #define F_CPU 16000000UL
 #include <avr/io.h>
-#include <util/delay.h>
 #include <stdint.h>
 
 /*********
@@ -9,19 +8,16 @@
 
 #define MOSI 3
 #define SCK  5
-#define CS   2
-#define RST  0
+#define RFID_CS   2
+#define RFID_RST  0
 
-#define CS_LOW()    (PORTB &= ~(1 << CS))
-#define CS_HIGH()   (PORTB |= (1 << CS))
-
-#define RST_LOW()   (PORTB &= ~(1 << RST))
-#define RST_HIGH()  (PORTB |= (1 << RST))
+#define CS_LOW()    (PORTB &= ~(1 << RFID_CS))
+#define CS_HIGH()   (PORTB |= (1 << RFID_CS))
 
 void spi_master_init(void)
 {
     // set MOSI, CS and SCK output, rest input
-    DDRB |= (1 << MOSI) | (1 << SCK) | (1 << CS);
+    DDRB |= (1 << MOSI) | (1 << SCK) | (1 << RFID_CS);
 
     // enable SPI, master, MSB first, set clock rate fclk/16
     SPCR0 = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
@@ -30,23 +26,15 @@ void spi_master_init(void)
     SPCR0 &= ~((1 << CPHA) | (1 << CPOL));
 }
 
-void spi_master_transmit(uint8_t data)
+static uint8_t spi_transceive(uint8_t data)
 {
     // start transmission
     SPDR0 = data;
 
     // wait for transmission complete
     while (!(SPSR0 & (1 << SPIF)));
-}
 
-uint8_t spi_master_receive(void)
-{
-    // dummy data
-    SPDR0 = 0xFF;
-
-    // wait for reception complete
-    while (!(SPSR0 & (1 << SPIF)));
-
+    // return cached data
     return SPDR0;
 }
 
@@ -97,10 +85,10 @@ void MFRC522_write_reg(uint8_t reg, uint8_t val)
 
     // transmit register address
     // leftshifted by 1, R/W bit (MSB) set to 0 for write
-    spi_master_transmit((reg << 1) & 0x7E);
+    (void)spi_transceive((reg << 1) & 0x7E);
 
     // transmit data
-    spi_master_transmit(val);
+    (void)spi_transceive(val);
 
     // deselect MFRC522
     CS_HIGH();
@@ -115,10 +103,10 @@ uint8_t MFRC522_read_reg(uint8_t reg)
 
     // transmit register address
     // leftshifted by 1, R/W bit (MSB) set to 1 for read
-    spi_master_transmit(((reg << 1) & 0x7E) | 0x80);
+    (void)spi_transceive(((reg << 1) & 0x7E) | 0x80);
 
     // get read
-    ret = spi_master_receive();
+    ret = spi_transceive(0xFF);
 
     // deselect MFRC522
     CS_HIGH();
