@@ -10,9 +10,6 @@
     #define CS_LOW() PORTB &= ~(1 << RFID_CS)
     #define CS_HIGH() PORTB |= (1 << RFID_CS)
 
-    #define MCU_ATMEL   1
-    #define MCU_STM32   0
-
 #elif defined(STM32G474xx)
 
     #include "spi-arm.h"
@@ -20,9 +17,6 @@
 
     #define CS_LOW() LL_GPIO_ResetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
     #define CS_HIGH() LL_GPIO_SetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
-
-    #define MCU_ATMEL   0
-    #define MCU_STM32   1
     
 #else
     #error "Unknown MCU"

@@ -1,3 +1,7 @@
+/*  
+ * proof of concept for multiplatform project
+ */
+
 #if defined(__AVR__)
     #define MCU_ATMEL 1
     #define MCU_STM32 0
@@ -8,6 +12,7 @@
     #error "Unknown MCU"
 #endif
 
+#include <stdint.h>
 #include "MFRC522.h"
 
 /* check if scanned UID matches (hardcoded) tag UID */
