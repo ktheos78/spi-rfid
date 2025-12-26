@@ -1,7 +1,3 @@
-#define F_CPU 16000000UL
-#include <avr/io.h>
-#include <stdint.h>
-
 #include "spi-avr.h"
 
 void spi_master_init(void)

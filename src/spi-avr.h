@@ -1,12 +1,14 @@
 #ifndef _SPI_AVR_H
 #define _SPI_AVR_H
 
+#define F_CPU 16000000UL
+#include <avr/io.h>
 #include <stdint.h>
 
 #define MOSI 3
 #define SCK  5
-#define CS   2
-#define RST  0
+#define RFID_CS   2
+#define RFID_RST  0
 
 #define CS_LOW()    (PORTB &= ~(1 << CS))
 #define CS_HIGH()   (PORTB |= (1 << CS))

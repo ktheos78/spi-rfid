@@ -1,32 +1,12 @@
-#ifndef _MFRC522_H
-#define _MFRC522_H
+#ifndef __MFRC522_H
+#define __MFRC522_H
 
 #include <stdint.h>
 
-#if defined(__AVR__)
+#include "spi.h"
 
-    #include "spi-avr.h"
-
-    #define CS_LOW() PORTB &= ~(1 << RFID_CS)
-    #define CS_HIGH() PORTB |= (1 << RFID_CS)
-
-    #define MCU_ATMEL   1
-    #define MCU_STM32   0
-
-#elif defined(STM32G474xx)
-
-    #include "spi-arm.h"
-    #include "gpio-arm.h"
-
-    #define CS_LOW() LL_GPIO_ResetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
-    #define CS_HIGH() LL_GPIO_SetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
-
-    #define MCU_ATMEL   0
-    #define MCU_STM32   1
-    
-#else
-    #error "Unknown MCU"
-#endif
+#define CS_LOW() LL_GPIO_ResetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin);
+#define CS_HIGH() LL_GPIO_SetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin);
 
 // commands
 #define PCD_IDLE        0x00
@@ -76,4 +56,4 @@ uint8_t MFRC522_anticoll(uint8_t *);
 void set_bitmask(uint8_t, uint8_t);
 void clear_bitmask(uint8_t, uint8_t);
 
-#endif /* _MFRC522_H */
+#endif /* __MFRC522_H */
