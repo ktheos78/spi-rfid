@@ -1,17 +1,6 @@
 /*  
  * proof of concept for multiplatform project
  */
-
-#if defined(__AVR__)
-    #define MCU_ATMEL 1
-    #define MCU_STM32 0
-#elif defined(STM32G474xx)
-    #define MCU_ATMEL 0
-    #define MCU_STM32 1
-#else
-    #error "Unknown MCU"
-#endif
-
 #include <stdint.h>
 #include "MFRC522.h"
 
@@ -33,8 +22,8 @@ int main(void)
 {
     uint8_t buf_atqa[2], uid[5];
 
-    if (MCU_ATMEL)
-    {
+    #if defined(__AVR__)
+
         /* AVR init code */
 
         // set PD{0,1} as output
@@ -73,10 +62,9 @@ int main(void)
                 }
             }
         }
-    }
 
-    else if (MCU_STM32)
-    {
+    #elif defined(STM32G474xx)
+
         /* ARM init code */
 
         /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -125,9 +113,9 @@ int main(void)
                 }
             }
         }
-    }   
 
-    // invalid MCU
-    else
-        while(1);
+    
+    #else
+        #error "Unknown MCU"
+    #endif
 }

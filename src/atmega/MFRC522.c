@@ -53,10 +53,7 @@ void MFRC522_init(void)
 {
     // soft reset
     MFRC522_write_reg(CommandReg, PCD_RESETPHASE);
-    if (MCU_ATMEL)
-        _delay_ms(50);
-    else if (MCU_STM32)
-        LL_mDelay(50);
+    delay_ms(50);
 
     // init timer
     MFRC522_write_reg(TModeReg, 0x80);

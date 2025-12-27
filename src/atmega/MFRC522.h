@@ -12,6 +12,7 @@
 
     #define CS_LOW() PORTB &= ~(1 << RFID_CS)
     #define CS_HIGH() PORTB |= (1 << RFID_CS)
+    #define delay_ms _delay_ms
 
 #elif defined(STM32G474xx)
 
@@ -20,6 +21,7 @@
 
     #define CS_LOW() LL_GPIO_ResetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
     #define CS_HIGH() LL_GPIO_SetOutputPin(RFID_CS_GPIO_Port, RFID_CS_Pin)
+    #define delay_ms LL_mDelay
     
 #else
     #error "Unknown MCU"
