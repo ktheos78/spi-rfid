@@ -5,6 +5,9 @@
 
 #if defined(__AVR__)
 
+    #define F_CPU 16000000UL
+    #include <avr/io.h>
+    #include <util/delay.h>
     #include "spi-avr.h"
 
     #define CS_LOW() PORTB &= ~(1 << RFID_CS)
