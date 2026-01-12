@@ -98,20 +98,8 @@ int main(void)
 	MFRC522_init();
 	/* USER CODE END 2 */
 
-	/* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
-	BspCOMInit.BaudRate   = 115200;
-	BspCOMInit.WordLength = COM_WORDLENGTH_8B;
-	BspCOMInit.StopBits   = COM_STOPBITS_1;
-	BspCOMInit.Parity     = COM_PARITY_NONE;
-	BspCOMInit.HwFlowCtl  = COM_HWCONTROL_NONE;
-	if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
-	{
-		Error_Handler();
-	}
-
 	// init PORTA as off
-	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0 | LL_GPIO_PIN_1 | LL_GPIO_PIN_4 |
-							LL_GPIO_PIN_5 | LL_GPIO_PIN_6 | LL_GPIO_PIN_7);
+	LL_GPIO_ResetOutputPin(GPIOA, 0xFF);
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
@@ -127,18 +115,18 @@ int main(void)
 				// check if scanned UID matches
 				if (validate(uid))
 				{
-					LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_0 | LL_GPIO_PIN_1);
+					LL_GPIO_SetOutputPin(GPIOA, 0xFF);
 					LL_mDelay(5000);
-					LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0 | LL_GPIO_PIN_1);
+					LL_GPIO_ResetOutputPin(GPIOA, 0xFF);
 				}
 
 				else
 				{
 					for (uint8_t i = 0; i < 5; ++i)
 					{
-						LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_0 | LL_GPIO_PIN_1);
+						LL_GPIO_SetOutputPin(GPIOA, 0xFF);
 						LL_mDelay(500);
-						LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_0 | LL_GPIO_PIN_1);
+						LL_GPIO_ResetOutputPin(GPIOA, 0xFF);
 						LL_mDelay(500);
 					}
 				}
