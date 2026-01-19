@@ -30,17 +30,8 @@ Additionally, it is portable as-is across the supported MCUs thanks to platform-
 
 ### Main Project - RFID Lock
 
-The main project's structure is as follows:
-1. Initialize all microcontroller peripherals
-
-2. Initialize MFRC522
-
-3. In an infinite loop: 
-    - Check if there is an NFC tag nearby
-    - If there is, get its UID
-    - Compare tag's UID to key UID
-    - If it matches, keep the LEDs (`PA{0,1}`/`PD{0,1}`) on for 5 seconds (access granted) 
-    - Otherwise, blink said LEDs repeatedly for 5 seconds (access denied)
+The main project's structure is shown in the following flowchart:
+![Project Flowchart](./img/flowchart.png)
 
 ## Additional Notes
 
