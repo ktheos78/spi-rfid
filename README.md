@@ -31,6 +31,7 @@ Additionally, it is portable as-is across the supported MCUs thanks to platform-
 ### Main Project - RFID Lock
 
 The main project's structure is shown in the following flowchart:
+
 ![Project Flowchart](./img/flowchart.png)
 
 ## Additional Notes
